@@ -1,0 +1,31 @@
+# --- secrets -------------------------------------------------------------
+# API keys are read from the environment only. Never commit them.
+.env
+.env.*
+*.key
+*.pem
+secrets.*
+
+# --- regenerable data ----------------------------------------------------
+# 33 MB of raw NHANES XPT files -- rebuild with scripts/fetch_nhanes.py
+# Derived CSVs -- rebuild with scripts/build_frailty_dataset.py
+data/
+
+# Trained models -- rebuild with scripts/train_baseline.py
+models/
+
+# --- python --------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# --- editors / os --------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
