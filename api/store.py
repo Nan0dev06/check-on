@@ -34,7 +34,7 @@ from notifications import (  # noqa: E402
     missed_checkin_notification,
     notification_for,
 )
-from triage_summary import label_for  # noqa: E402
+from triage_summary import label_for, summarize  # noqa: E402
 
 from . import seed  # noqa: E402
 from .scoring import score_answers  # noqa: E402
@@ -200,8 +200,19 @@ class Store:
             checkins=self.backend_checkins(upto=as_of),
             today=as_of,
         )
-        note = notification_for(a)
-        return self._serialise(a, note, as_of, source="computed")
+        # The outcome is already decided by assess() above; this only turns it
+        # into one sentence. summarize() itself never raises for a rejected or
+        # empty model response -- it falls back to its own template -- but
+        # make_client() raises immediately if GROQ_API_KEY is unset, before any
+        # try/except inside summarize() can catch it. Caught here so a missing
+        # key degrades to the same deterministic sentence combining.py already
+        # produces, rather than 500ing the whole assessment.
+        try:
+            sentence = summarize(a).sentence
+        except Exception:
+            sentence = a.reasoning
+        note = notification_for(a, summary_sentence=sentence)
+        return self._serialise(a, note, as_of, source="computed", reasoning=sentence)
 
     def _recorded_failure_payload(self, symptom: str, as_of: dt.date) -> dict:
         """Serialise a check that failed, without pretending it ran."""
@@ -239,7 +250,7 @@ class Store:
         }
 
     def _serialise(self, a, note: Notification, as_of: dt.date,
-                   *, source: str) -> dict:
+                   *, source: str, reasoning: str | None = None) -> dict:
         return {
             "symptom": a.symptom,
             "symptom_label": label_for(a.symptom),
@@ -247,7 +258,7 @@ class Store:
             "outcome": a.outcome.value,
             "as_of": _iso(as_of),
             "taps": [_iso(d) for d in self.taps_for(a.symptom)],
-            "reasoning": a.reasoning,
+            "reasoning": reasoning if reasoning is not None else a.reasoning,
             "caveats": list(a.caveats),
             "recent_medications": [
                 {"name": m.name, "started": _iso(m.started),
