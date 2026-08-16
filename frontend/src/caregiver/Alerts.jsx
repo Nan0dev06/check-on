@@ -1,4 +1,5 @@
 import { alertBody, alertHeadline } from '../lib/copy'
+import { whatsappLink } from '../lib/format'
 
 /* C4 — Alerts.
  *
@@ -52,7 +53,9 @@ export default function Alerts({ data, onOpenFlag }) {
                     </button>
                     <a
                       className="co-btn co-btn--onink-secondary co-btn--grow"
-                      href={`tel:${person.phone}`}
+                      href={whatsappLink(person.phone)}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
                       Call {person.called}
                     </a>

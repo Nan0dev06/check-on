@@ -2,6 +2,7 @@ import SharedTimeline from './SharedTimeline'
 import { FeedItem } from '../FlagStates'
 import { IconRaise, WordmarkUnderline } from '../../ui/Icons'
 import { linkedHeadline, linkedBody } from '../../lib/copy'
+import { whatsappLink } from '../../lib/format'
 
 /* The caregiver dashboard at browser width.
  *
@@ -51,7 +52,12 @@ export default function Dashboard({ data, onOpenFlag, onAddMedicine }) {
               you’re looking after {person.name}
             </p>
             <div className="co-dash__mastheadActions">
-              <a className="co-btn co-btn--outline co-btn--pill" href={`tel:${person.phone}`}>
+              <a
+                className="co-btn co-btn--outline co-btn--pill"
+                href={whatsappLink(person.phone)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Call {person.called}
               </a>
               <button type="button" className="co-btn co-btn--primary co-btn--pill">

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import TapChart from '../charts/TapChart'
 import Sheet from './Sheet'
 import { IconChevronLeft } from '../ui/Icons'
+import { whatsappLink } from '../lib/format'
 import {
   NOT_A_DIAGNOSIS,
   STATE_HEADING,
@@ -140,7 +141,9 @@ export default function FlagDetail({ symptom, data, onBack, asModal }) {
         </button>
         <a
           className="co-btn co-btn--outline co-btn--lg"
-          href={`tel:${person.phone}`}
+          href={whatsappLink(person.phone)}
+          target="_blank"
+          rel="noopener noreferrer"
         >
           Call {person.called}
         </a>
