@@ -174,18 +174,28 @@ class Store:
         as_of = taps[-1]
         key = self._cache_key(symptom, as_of)
 
+        # A recorded failure stands until someone retries it. It is a stored
+        # record that the check did not run, never a result.
+        #
+        # Checked BEFORE the cache, not after. A successful retry caches a real
+        # outcome under this key, and reset() puts the recorded failure back --
+        # but a cache-first lookup would keep serving that cached success and
+        # the QUERY_FAILED state would silently disappear from the demo after
+        # the first retry. The state that must never decay into a calm-looking
+        # one was doing exactly that.
+        if not force and symptom in self.recorded_failures:
+            payload = self._recorded_failure_payload(symptom, as_of)
+            with self.lock:
+                self._assessments[key] = payload
+            return payload
+
         with self.lock:
             if not force and key in self._assessments:
                 return self._assessments[key]
 
-        # A recorded failure stands until someone retries it. It is a stored
-        # record that the check did not run, never a result.
-        if not force and symptom in self.recorded_failures:
-            payload = self._recorded_failure_payload(symptom, as_of)
-        else:
-            payload = self._run_assessment(symptom, as_of)
-            if force:
-                self.recorded_failures.pop(symptom, None)
+        payload = self._run_assessment(symptom, as_of)
+        if force:
+            self.recorded_failures.pop(symptom, None)
 
         with self.lock:
             self._assessments[key] = payload

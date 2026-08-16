@@ -28,6 +28,35 @@ Check On puts them in the same place.
 
 ---
 
+## Trying the demo
+
+**https://check-on.onrender.com** opens on a picker: Ruth's view, and Emily's
+view in either phone or desktop layout.
+
+It starts loaded with Ruth's story already in it — her four medicines with their
+real start dates, five months of weekly answers, and the taps that produced the
+flags. **That seeding is inputs, not answers.** No outcome is stored anywhere:
+every flag on screen is computed by running the real detection code against that
+data, querying openFDA live as the page loads. The five states you see are
+whatever the engine actually returns.
+
+You can add to it. Tap symptoms as Ruth, add a medicine as Emily, and the checks
+re-run over everything already logged — a medicine added now can retrospectively
+explain a tap from last week, which is the point of the screen. The numbers in
+the copy move with what you do, so "four times since Tuesday" becomes five after
+you tap.
+
+Two things worth knowing while you poke at it:
+
+- **State is shared and temporary.** One instance serves everyone, so taps are
+  visible to the next visitor, and the free tier drops the container after
+  about fifteen minutes idle, which puts it back to Ruth's story. To reset it
+  yourself: `curl -X POST https://check-on.onrender.com/api/_reset`
+- **The first load after it has been idle is slow** — around a minute. It is
+  querying openFDA and generating the caregiver sentences from scratch, with
+  nothing cached. It says so on screen rather than showing an empty page,
+  because on this product a blank screen and a calm result look identical.
+
 ## Ruth's half of it
 
 Ruth is not going to fill in a symptom diary. Almost nobody does, and asking an
