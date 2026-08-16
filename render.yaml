@@ -20,6 +20,6 @@ services:
     healthCheckPath: /api/person
     envVars:
       - key: PYTHON_VERSION
-        value: "3.12.7"
+        value: "3.13.4"
       - key: OPENFDA_API_KEY
         sync: false
