@@ -62,7 +62,7 @@ export default function CaregiverApp() {
   }, [])
 
   if (data.error) return <LoadFailed message={data.error} />
-  if (!data.ready) return <main className="co-phone" aria-busy="true" />
+  if (!data.ready) return <Loading />
 
   const overlay =
     stack?.kind === 'flag' ? (
@@ -176,6 +176,23 @@ function useCareData() {
   }, [])
 
   return { ...state, reload: load, recheck, addToDoctorList }
+}
+
+/* The first load after a deploy or a cold start recomputes every assessment
+ * against openFDA, which takes tens of seconds. An empty frame for that long
+ * reads as a broken app, and — worse for this product — an empty frame is
+ * indistinguishable from a calm result. It says what is happening instead. */
+function Loading() {
+  return (
+    <main className="co-phone" aria-busy="true">
+      <div className="co-cg__header">
+        <h1 className="co-cg__title">Running the checks…</h1>
+        <p className="co-cg__sub">
+          Nothing has been checked yet. This takes a moment the first time.
+        </p>
+      </div>
+    </main>
+  )
 }
 
 function LoadFailed({ message }) {
