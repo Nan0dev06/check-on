@@ -1,0 +1,18 @@
+/* Cascade order is declared once, here, and never relied on implicitly.
+ *
+ * This is the guard against the failure the brief calls out: an element
+ * selector in the reset and a class selector in a component both setting
+ * margin, with the winner decided by source order or by which one happens to
+ * carry more specificity. With explicit layers the answer is structural —
+ * `screens` always beats `primitives`, which always beats `base` — so a
+ * component's spacing can never be silently cancelled by a reset rule, and a
+ * one-off screen rule never needs `!important` to land.
+ */
+@layer tokens, base, primitives, screens;
+
+@import './tokens.css';
+@import './base.css';
+@import './primitives.css';
+@import './elder.css';
+@import './caregiver.css';
+@import './desktop.css';

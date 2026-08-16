@@ -1,0 +1,337 @@
+/* Shared primitives. Single-class selectors only — no descendant or element
+ * selectors here, so two primitives can never fight over the same declaration.
+ */
+
+@layer primitives {
+  /* --- app shell ---------------------------------------------------------
+   * Both phone products render into this. It fills a phone and centres a
+   * 402 x 874 window on anything larger, which is what "phone only, at any
+   * width, no exceptions" means in a browser. */
+  .co-phone {
+    position: relative;
+    width: 100%;
+    max-width: 402px;
+    height: 100dvh;
+    max-height: 874px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--screen);
+    color: var(--text);
+  }
+
+  @media (min-width: 420px) and (min-height: 890px) {
+    .co-phone {
+      border-radius: var(--r-frame);
+      box-shadow: var(--shadow-shell);
+      margin-block: max(0px, calc((100dvh - 874px) / 2));
+    }
+  }
+
+  /* Scroll region. `flex: 0 0 auto` on the children is applied by .co-stack so
+   * cards never collapse under their content. */
+  .co-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .co-stack > * {
+    flex: 0 0 auto;
+  }
+
+  /* --- type helpers ------------------------------------------------------ */
+  .co-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: var(--track-mono);
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+
+  .co-mono {
+    font-family: var(--font-mono);
+    font-weight: 400;
+  }
+
+  .co-hand {
+    font-family: var(--font-hand);
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .co-quote {
+    font-family: var(--font-quote);
+    font-weight: 400;
+    line-height: var(--leading-prose);
+  }
+
+  .co-body {
+    color: var(--text-body);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  .co-meta {
+    font-size: 14px;
+    color: var(--ink-mute);
+  }
+
+  /* --- buttons -----------------------------------------------------------
+   * One shape vocabulary across both products. Variants change fill and
+   * border only; padding and radius are set by the size modifier. */
+  .co-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-2);
+    font-family: var(--font-ui);
+    font-weight: 600;
+    letter-spacing: var(--track-tight);
+    border-radius: var(--r-button);
+    border: 1px solid transparent;
+    min-height: var(--touch-caregiver);
+    padding: 14px 18px;
+    font-size: 15px;
+    text-align: center;
+    transition:
+      transform var(--t-press) var(--ease-out),
+      background-color var(--t-press) var(--ease-out),
+      color var(--t-press) var(--ease-out);
+  }
+
+  .co-btn:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  /* Disabled is inert, not just dimmed: the pale --ink-tint fill against a
+   * primary's --ink fill is what says "unavailable", so the label itself does
+   * not have to be faint to carry it. Disabled controls are exempt from WCAG
+   * 1.4.3, but "Save is not yet valid" is information worth being able to read,
+   * and --text-body costs nothing here. */
+  .co-btn:disabled {
+    cursor: default;
+    background: var(--ink-tint);
+    border-color: transparent;
+    color: var(--text-body);
+    box-shadow: none;
+  }
+
+  .co-btn:disabled:active {
+    transform: none;
+  }
+
+  .co-btn--primary {
+    background: var(--ink);
+    color: var(--on-ink);
+  }
+
+  .co-btn--secondary {
+    border-color: var(--rule);
+    color: var(--text-body);
+    background: transparent;
+  }
+
+  .co-btn--secondary:hover:not(:disabled) {
+    background: var(--ink-tint);
+  }
+
+  .co-btn--outline {
+    border: 2px solid var(--ink);
+    color: var(--text);
+    background: transparent;
+  }
+
+  .co-btn--outline:hover:not(:disabled) {
+    background: var(--ink-tint);
+  }
+
+  /* On an --ink card the roles invert: paper is the loud one. */
+  .co-btn--onink-primary {
+    background: var(--on-ink);
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .co-btn--onink-secondary {
+    border-color: var(--on-ink-rule);
+    color: var(--on-ink);
+    background: transparent;
+  }
+
+  .co-btn--dashed {
+    border: 1px dashed var(--rule);
+    color: var(--text-body);
+    background: transparent;
+  }
+
+  .co-btn--dashed:hover:not(:disabled) {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  .co-btn--quiet {
+    background: transparent;
+    color: var(--ink);
+    font-weight: 600;
+    min-height: var(--touch-caregiver);
+    padding: 8px 4px;
+  }
+
+  .co-btn--full {
+    width: 100%;
+  }
+
+  .co-btn--grow {
+    flex: 1;
+  }
+
+  .co-btn--pill {
+    border-radius: var(--r-pill);
+  }
+
+  .co-btn--lg {
+    padding: 17px 20px;
+    font-size: 16px;
+    border-radius: var(--r-field);
+    font-weight: 700;
+  }
+
+  .co-btn--sm {
+    min-height: var(--touch-desktop);
+    padding: 10px 14px;
+    font-size: 13px;
+    border-radius: 11px;
+  }
+
+  .co-btn--disabled-ink {
+    color: var(--rule-strong);
+  }
+
+  /* --- cards -------------------------------------------------------------
+   * §7 varies framing, not just colour, so each flag state gets its own
+   * modifier rather than a colour swap on one shape. */
+  .co-card {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-card);
+    padding: var(--s-4);
+  }
+
+  .co-card--ink {
+    border-color: var(--ink);
+  }
+
+  .co-card--ink2 {
+    border: 2px solid var(--ink);
+  }
+
+  .co-card--dashed {
+    background: transparent;
+    border: 1px dashed var(--rule);
+  }
+
+  .co-card--dashed2 {
+    background: transparent;
+    border: 2px dashed var(--rule);
+  }
+
+  .co-card--plain {
+    background: var(--section);
+    border-color: transparent;
+  }
+
+  .co-card--raised {
+    box-shadow: var(--shadow-card);
+  }
+
+  /* QUERY_FAILED. The diagonal stripe is what makes it unmistakable at a
+   * glance — it must never be able to read as a calm state. */
+  .co-card--failed {
+    background: repeating-linear-gradient(
+      135deg,
+      var(--ink) 0 9px,
+      var(--ink-stripe) 9px 18px
+    );
+    border-color: transparent;
+    color: #f1eee3;
+  }
+
+  /* Highest-urgency notification: solid ink, offset shadow, heaviest object
+   * on the screen. */
+  .co-card--alert {
+    background: var(--ink);
+    border-color: transparent;
+    color: var(--on-ink);
+    box-shadow: var(--shadow-card-invert);
+  }
+
+  /* --- pills, chips, dots ------------------------------------------------ */
+  .co-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--r-pill);
+    padding: 7px 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: var(--ink);
+    color: var(--on-ink);
+  }
+
+  .co-dot {
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: var(--r-pill);
+    background: var(--rule-strong);
+  }
+
+  .co-dot--warn {
+    width: 10px;
+    height: 10px;
+    background: var(--warn-ink);
+  }
+
+  .co-rule {
+    height: 1px;
+    background: var(--dash);
+    border: 0;
+  }
+
+  .co-rule--dashed {
+    height: 0;
+    border-top: 2px dashed var(--dash);
+    background: none;
+  }
+
+  /* --- layout helpers ---------------------------------------------------- */
+  .co-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .co-row {
+    display: flex;
+    align-items: center;
+  }
+
+  .co-push {
+    margin-left: auto;
+  }
+
+  .co-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

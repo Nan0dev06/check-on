@@ -1,0 +1,140 @@
+/* Reset and global element defaults. Everything here uses element selectors and
+ * lives in the `base` layer, which every component layer outranks by structure.
+ */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* `hr` belongs in this list. Its UA margin is 0.5em block, which silently
+   * adds ~24px between two sections that already set their own gap — the exact
+   * "spacing appears from nowhere" failure that makes layout debugging slow. */
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  figure,
+  ul,
+  ol,
+  hr {
+    margin: 0;
+  }
+
+  ul,
+  ol {
+    padding: 0;
+    list-style: none;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-weight: 600;
+    letter-spacing: var(--track-display);
+    line-height: var(--leading-display);
+    text-wrap: balance;
+  }
+
+  p {
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  /* Every interactive control is a real button or input, so the reset has to
+   * neutralise the UA styles rather than components each undoing them. */
+  button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    text-align: inherit;
+    cursor: pointer;
+  }
+
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  svg {
+    display: block;
+  }
+
+  /* Links are used for real navigation only (tel:), and are styled by their
+   * component. The underline comes back on hover so the affordance is not
+   * carried by colour alone. */
+  a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* --- accessibility floor ------------------------------------------------
+   * Not in the brief, and not optional. The palette is one ink on cream, so a
+   * focus ring drawn in --ink alone would vanish against an --ink fill; the
+   * paper-coloured inner ring keeps it visible on both. */
+  :focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .co-on-ink :focus-visible,
+  .co-on-ink:focus-visible {
+    outline-color: var(--on-ink);
+  }
+
+  /* Focus must never be silently removed; if a component wants a different
+   * ring it overrides `outline`, not `outline: none`. */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  ::selection {
+    background: var(--ink-tint);
+    color: var(--text);
+  }
+
+  ::placeholder {
+    /* --ink-mute clears 4.5:1 on --card; the UA default grey does not. */
+    color: var(--ink-mute);
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

@@ -1,0 +1,925 @@
+/* Caregiver phone — 402 x 874, four tabs, one level of stack above them.
+ *
+ * Two deliberate departures from the reference HTML, both because
+ * DESIGN_SYSTEM.md is normative where the two disagree:
+ *   - §3 floors caregiver metadata at 14px. The HTML sets several timestamps
+ *     and legend labels at 13px; they are 14px here.
+ *   - §7 gives UNEXPLAINED_DEVIATION "--rule border, no fill". The HTML fills
+ *     it with --card on C1 and leaves it unfilled on the desktop rail; unfilled
+ *     wins, so the state reads the same in both places.
+ * Tab labels stay at 12px, which the handoff specifies outright.
+ */
+
+@layer screens {
+  /* --- shared chrome ------------------------------------------------------ */
+  .co-cg__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-1);
+    padding: 66px 20px 12px;
+  }
+
+  .co-cg__title {
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: var(--track-display);
+  }
+
+  .co-cg__sub {
+    font-size: 14px;
+    color: var(--ink-mute);
+  }
+
+  .co-cg__scroll {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 10px 20px 20px;
+  }
+
+  .co-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--s-1);
+    padding: 12px 8px 30px;
+    border-top: 1px solid var(--dash);
+    background: var(--section);
+  }
+
+  /* --ink-mute measures 4.32:1 on the --section fill — under AA for 12px text.
+   * The palette is closed (§2: "No other colours"), so the fix is the correct
+   * existing token rather than a new one: --text-body clears it comfortably and
+   * the active tab is still distinguished by weight and --text. */
+  .co-tabs__tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--touch-caregiver);
+    border-radius: var(--r-chip);
+    font-size: 12px;
+    color: var(--text-body);
+    transition: color var(--t-tab) var(--ease-out);
+  }
+
+  .co-tabs__tab--on {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* --- C1 Today ----------------------------------------------------------- */
+  .co-today__person {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: 66px 20px 16px;
+  }
+
+  .co-avatar {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--r-pill);
+    background: var(--dash);
+    color: var(--ink);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .co-today__name {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: var(--track-display);
+  }
+
+  .co-today__last {
+    font-size: 14px;
+    color: var(--ink-mute);
+  }
+
+  .co-today__call {
+    margin-left: auto;
+    min-height: var(--touch-caregiver);
+    padding-left: var(--s-3);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .co-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* --- the five flag states (§7) ------------------------------------------
+   * Framing carries the meaning: solid border, plain border, no card, dashed
+   * border, inverted stripe. Colour alone never distinguishes two of them. */
+
+  /* MEDICATION_LINKED, lead treatment. The only state with buttons. */
+  .co-lead {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--card);
+    border: 1px solid var(--ink);
+    border-radius: var(--r-frame);
+    box-shadow: var(--shadow-card);
+  }
+
+  .co-lead__bar {
+    padding: 11px 18px;
+    background: var(--ink);
+    color: #fff6ef;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .co-lead__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    padding: 18px;
+  }
+
+  .co-lead__title {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: var(--track-display);
+    text-wrap: pretty;
+  }
+
+  .co-lead__text {
+    font-size: 15px;
+    line-height: var(--leading-body);
+    color: var(--text-body);
+    text-wrap: pretty;
+  }
+
+  .co-lead__actions {
+    display: flex;
+    gap: 10px;
+    padding-top: var(--s-1);
+  }
+
+  /* UNEXPLAINED_DEVIATION */
+  .co-state {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px;
+    border: 1px solid var(--rule);
+    border-radius: var(--r-card-sm);
+    background: transparent;
+  }
+
+  .co-state__head {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    color: var(--ink);
+  }
+
+  /* The linked row is tappable through to the detail screen; the other four
+   * states are not, because there is nothing further to show. */
+  .co-state--linked {
+    width: 100%;
+    text-align: left;
+    border-color: var(--ink);
+    transition: background-color var(--t-press) var(--ease-out);
+  }
+
+  .co-state--linked:hover {
+    background: var(--ink-tint);
+  }
+
+  .co-state__label {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--text);
+  }
+
+  .co-state__when {
+    margin-left: auto;
+    font-size: 14px;
+    color: var(--ink-mute);
+  }
+
+  .co-state__text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text-body);
+    text-wrap: pretty;
+  }
+
+  /* WITHIN_EXPECTED — no card at all */
+  .co-quiet {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: var(--s-1) 6px;
+  }
+
+  .co-quiet__text {
+    font-size: 14px;
+    color: var(--ink-mute);
+    text-wrap: pretty;
+  }
+
+  /* INSUFFICIENT_HISTORY — neither good nor bad */
+  .co-state--learning {
+    border-style: dashed;
+  }
+
+  .co-state--learning .co-state__label {
+    color: var(--text-body);
+  }
+
+  .co-state--learning .co-state__text {
+    font-size: 14px;
+    color: var(--ink-mute);
+  }
+
+  .co-state--learning .co-state__head {
+    color: var(--ink-mute);
+  }
+
+  /* QUERY_FAILED — inverted, and it must never decay into a quiet state */
+  .co-failed {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px 16px;
+    border-radius: var(--r-field);
+    color: #f1eee3;
+    background: repeating-linear-gradient(
+      135deg,
+      var(--ink) 0 9px,
+      var(--ink-stripe) 9px 18px
+    );
+  }
+
+  .co-failed__head {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    color: var(--warn-ink);
+  }
+
+  .co-failed__label {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #f1eee3;
+  }
+
+  .co-failed__when {
+    margin-left: auto;
+    font-size: 14px;
+    color: var(--on-ink-mute);
+  }
+
+  .co-failed__text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--on-ink-body);
+    text-wrap: pretty;
+  }
+
+  .co-failed__retry {
+    align-self: flex-start;
+    margin-top: var(--s-1);
+    min-height: var(--touch-caregiver);
+    padding: 8px 12px;
+    border: 1px solid var(--on-ink-rule);
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #f1eee3;
+  }
+
+  .co-failed__retry[aria-busy='true'] {
+    color: var(--on-ink-mute);
+  }
+
+  /* --- C2 Medicines -------------------------------------------------------- */
+  .co-meds {
+    gap: 14px;
+  }
+
+  .co-med {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-card);
+  }
+
+  .co-med--flagged {
+    border-color: var(--ink);
+  }
+
+  .co-med__name-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .co-med__name {
+    font-size: 25px;
+    font-weight: 600;
+    letter-spacing: var(--track-display);
+  }
+
+  .co-med__dose {
+    font-size: 14px;
+    color: var(--ink-mute);
+  }
+
+  /* The start date is the most important number in the app, and is set as
+   * such: mono, 26px, ink on the flagged medicine. */
+  .co-med__date-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .co-med__date {
+    font-family: var(--font-mono);
+    font-size: 26px;
+    letter-spacing: -0.02em;
+    color: var(--text-body);
+  }
+
+  .co-med--flagged .co-med__date {
+    color: var(--ink);
+  }
+
+  .co-med__age {
+    font-size: 14px;
+    color: var(--text-body);
+  }
+
+  .co-med__note {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-body);
+  }
+
+  .co-med--stopped {
+    background: var(--section);
+    border-color: transparent;
+    gap: var(--s-2);
+  }
+
+  .co-med__struck {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: var(--track-display);
+    color: var(--text-body);
+    text-decoration: line-through;
+  }
+
+  .co-med__add {
+    padding: 18px;
+    border: 1px dashed var(--rule);
+    border-radius: var(--r-card);
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-body);
+    min-height: var(--touch-caregiver);
+  }
+
+  .co-med__add:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  /* --- C3 Trend ------------------------------------------------------------ */
+  .co-chartcard {
+    padding: 18px 14px 14px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-frame);
+  }
+
+  .co-legend {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 10px 4px 0;
+  }
+
+  .co-legend__item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 14px;
+    color: var(--text-body);
+  }
+
+  .co-legend__line {
+    width: 16px;
+    height: 3px;
+    border-radius: 9px;
+    background: var(--ink);
+  }
+
+  .co-legend__band {
+    width: 16px;
+    height: 10px;
+    border-radius: 3px;
+    border: 1.5px solid var(--rule-strong);
+    background: var(--ink-tint);
+  }
+
+  .co-reading {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .co-reading__lede {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: var(--track-display);
+    text-wrap: pretty;
+  }
+
+  .co-reading__text {
+    font-size: 15px;
+    line-height: var(--leading-prose);
+    color: var(--text-body);
+    text-wrap: pretty;
+  }
+
+  .co-provenance {
+    padding: 16px;
+    border-radius: var(--r-card-sm);
+    background: var(--section);
+    font-size: 14px;
+    line-height: var(--leading-body);
+    color: var(--text-body);
+    text-wrap: pretty;
+  }
+
+  /* --- C4 Alerts ----------------------------------------------------------- */
+  .co-alerts {
+    gap: 22px;
+  }
+
+  .co-alerts__group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .co-alert {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    padding: 20px;
+    border-radius: var(--r-card);
+    background: var(--ink);
+    color: var(--on-ink);
+    box-shadow: var(--shadow-card-invert);
+  }
+
+  .co-alert__kind {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--warn-ink);
+  }
+
+  .co-alert__title {
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: var(--track-display);
+    text-wrap: pretty;
+  }
+
+  .co-alert__text {
+    font-size: 15px;
+    line-height: var(--leading-body);
+    color: var(--on-ink-body);
+    text-wrap: pretty;
+  }
+
+  .co-alert__actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 2px;
+  }
+
+  /* Quiet nudge — flat tint, no border, no buttons. Nothing sits between
+   * this and the card above it. */
+  .co-nudge {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--s-3);
+    padding: 16px;
+    border-radius: var(--r-card-sm);
+    background: var(--section);
+  }
+
+  .co-nudge__dot {
+    margin-top: 7px;
+  }
+
+  .co-nudge__title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .co-nudge__text {
+    font-size: 14px;
+    line-height: var(--leading-body);
+    color: var(--text-body);
+    text-wrap: pretty;
+  }
+
+  .co-nudge__at {
+    padding-top: 2px;
+    font-size: 14px;
+    color: var(--text-body); /* on --section; see the tab note above */
+  }
+
+  /* --- modal-style headers (C5, C6) --------------------------------------- */
+  .co-modalbar {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: 62px 20px 14px;
+    border-bottom: 1px solid var(--dash);
+  }
+
+  .co-modalbar__title {
+    margin-inline: auto;
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  .co-modalbar__action {
+    min-height: var(--touch-caregiver);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  /* Disabled controls are exempt from WCAG 1.4.3, but "not yet valid" is
+   * information the caregiver needs to read, so this uses the muted token
+   * rather than the near-invisible border tone the reference shows. */
+  .co-modalbar__action:disabled {
+    color: var(--ink-mute);
+  }
+
+  .co-modalbar__back {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: var(--touch-caregiver);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .co-stickyfoot {
+    display: flex;
+    gap: 10px;
+    padding: 14px 20px 34px;
+    border-top: 1px solid var(--dash);
+    background: var(--section);
+  }
+
+  .co-stickyfoot--stacked {
+    flex-direction: column;
+  }
+
+  .co-stickyfoot__note {
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-body); /* on --section; see the tab note above */
+  }
+
+  /* --- C5 Add a medicine --------------------------------------------------- */
+  .co-form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: 20px;
+  }
+
+  .co-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+  }
+
+  .co-field__label {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-2);
+    flex-wrap: wrap;
+  }
+
+  .co-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-field);
+    font-size: 18px;
+    font-weight: 500;
+    width: 100%;
+    min-height: var(--touch-caregiver);
+  }
+
+  .co-input--active {
+    border: 2px solid var(--ink);
+  }
+
+  /* The ring is drawn on the input itself rather than on the wrapper via
+   * :focus-within. Both look the same, but only one is actually on the element
+   * that receives focus — and a wrapper-only ring silently disappears if the
+   * markup around the input ever changes. */
+  .co-bare {
+    flex: 1;
+    align-self: stretch;
+    min-width: 0;
+    min-height: var(--touch-caregiver);
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+  }
+
+  .co-input__badge {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-mute);
+    letter-spacing: 0.08em;
+  }
+
+  .co-suggest {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+  }
+
+  .co-suggest__row {
+    padding: 13px 16px;
+    font-size: 16px;
+    text-align: left;
+    min-height: var(--touch-caregiver);
+    border-bottom: 1px solid var(--dash);
+  }
+
+  .co-suggest__row:last-child {
+    border-bottom: 0;
+  }
+
+  .co-suggest__row:hover,
+  .co-suggest__row[aria-selected='true'] {
+    background: var(--ink-tint);
+  }
+
+  .co-dose {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .co-dose__value {
+    flex: 1;
+    min-width: 0;
+    padding: 14px 16px;
+    font-size: 17px;
+    font-weight: 500;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    min-height: var(--touch-caregiver);
+  }
+
+  /* The three units have to stay on one line beside the amount. Left to wrap
+   * they push the flexible amount field into a two-row box. */
+  .co-dose .co-choices {
+    flex: none;
+    flex-wrap: nowrap;
+  }
+
+  .co-dose .co-choice {
+    padding: 14px 13px;
+  }
+
+  .co-choices {
+    display: flex;
+    gap: var(--s-2);
+    flex-wrap: wrap;
+  }
+
+  .co-choices--pad {
+    padding-top: var(--s-1);
+  }
+
+  .co-choice {
+    padding: 14px 16px;
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-body);
+    min-height: var(--touch-caregiver);
+  }
+
+  .co-choice--on {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--on-ink);
+  }
+
+  .co-choice--pill {
+    border-radius: var(--r-pill);
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  .co-choice--pill.co-choice--on {
+    font-weight: 600;
+  }
+
+  .co-choice--chip {
+    border-radius: var(--r-chip);
+    padding: 11px 14px;
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  /* The start date is the field that does the work, and is styled as such. */
+  .co-startdate {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: 16px;
+    background: var(--card);
+    border: 2px solid var(--ink);
+    border-radius: var(--r-field);
+    min-height: var(--touch-caregiver);
+    width: 100%;
+  }
+
+  .co-startdate__value {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .co-startdate__value--empty {
+    /* --rule-strong is a border tone; as text it measures 1.94:1. */
+    color: var(--ink-mute);
+  }
+
+  .co-startdate__age {
+    margin-left: auto;
+    font-size: 14px;
+    color: var(--text-body);
+  }
+
+  .co-help {
+    padding-top: 2px;
+    font-size: 14px;
+    line-height: var(--leading-body);
+    color: var(--ink-mute);
+    text-wrap: pretty;
+  }
+
+  /* --- C6 Flag detail ------------------------------------------------------ */
+  .co-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .co-detail__head {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .co-detail__title {
+    font-size: 27px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: var(--track-display);
+    text-wrap: pretty;
+  }
+
+  .co-detail__body {
+    font-size: 16px;
+    line-height: var(--leading-prose);
+    color: var(--text-body);
+    text-wrap: pretty;
+  }
+
+  .co-tapchart {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    padding: 18px 16px 14px;
+    background: var(--card);
+    border: 2px solid var(--ink);
+    border-radius: var(--r-card);
+  }
+
+  .co-why {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .co-why__row {
+    display: flex;
+    gap: var(--s-3);
+    align-items: flex-start;
+  }
+
+  .co-why__n {
+    flex: none;
+    padding-top: 2px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--ink);
+  }
+
+  .co-why__text {
+    font-size: 15px;
+    line-height: var(--leading-body);
+    color: var(--text-body);
+    text-wrap: pretty;
+  }
+
+  .co-isnt {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    padding: 16px;
+    border: 2px dashed var(--rule);
+    border-radius: var(--r-card-sm);
+  }
+
+  .co-isnt__title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .co-isnt__text {
+    font-size: 14px;
+    line-height: var(--leading-prose);
+    color: var(--ink-mute);
+    text-wrap: pretty;
+  }
+
+  .co-quotebox {
+    padding: 16px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-field);
+    font-family: var(--font-quote);
+    font-size: 16px;
+    line-height: var(--leading-prose);
+    color: var(--text);
+    text-wrap: pretty;
+  }
+}

@@ -1,0 +1,103 @@
+/* Design tokens — DESIGN_SYSTEM.md §2–§6, verbatim.
+ *
+ * The ten colours in §2 are normative and must not be extended: "No other
+ * colours. No success green." The reference HTML does use a handful of values
+ * §2 doesn't name (the light ink-card text, the stripe's second blue, the
+ * disabled grey). Those are named here as derived tokens rather than left as
+ * literals in components, so the palette stays auditable from one file.
+ *
+ * The whole sheet is inside @layer tokens, the lowest layer, so nothing here
+ * can ever out-specify a component rule.
+ */
+
+@layer tokens {
+  :root {
+    /* §2 Colour — the normative ten */
+    --paper: #f4f0e6;
+    --card: #fffcf4;
+    --ink: #1e2a78;
+    --ink-tint: #e7e5f2;
+    --ink-mute: #6e6a88;
+    --rule: #c6c2d8;
+    --dash: #dcd8cb;
+    --text: #16150f;
+    --text-body: #4a4738;
+    --warn-ink: #f7c88f; /* failed-check state only */
+
+    /* Named from the reference, derived from the ten above */
+    --screen: #f7f3e9; /* in-frame surface; --paper is the canvas behind it */
+    --section: #f0ebde; /* section fills, tab bar, sticky footers */
+    --on-ink: #f7f3e9; /* text on an --ink fill */
+    --on-ink-body: #dedbeb; /* body copy on an --ink fill */
+    --on-ink-mute: #bdbad4; /* timestamps on an --ink fill */
+    --on-ink-rule: #8c8ab8; /* borders on an --ink fill */
+    --ink-stripe: #253080; /* second blue of the failed-check diagonal */
+    --rule-strong: #b9b5ce; /* hollow chart dots, disabled labels, legend edge */
+    --rule-soft: #9e9ab8; /* the older of two dashed chart markers */
+
+    /* §3 Type */
+    --font-ui: Archivo, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+    --font-hand: Caveat, cursive;
+    --font-quote: Newsreader, Georgia, serif;
+
+    --track-display: -0.02em; /* Archivo above 24px */
+    --track-tight: -0.01em;
+    --track-mono: 0.14em; /* mono eyebrows, uppercase */
+
+    --leading-body: 1.55;
+    --leading-prose: 1.6;
+    --leading-display: 1.2;
+
+    /* §4 Shape */
+    --r-frame: 22px;
+    --r-card: 20px;
+    --r-card-sm: 18px;
+    --r-field: 16px;
+    --r-button: 14px;
+    --r-chip: 12px;
+    --r-pill: 99px;
+
+    --stroke-icon: 2.4;
+
+    /* §4 Elevation — one offset hard shadow, never a blur stack */
+    --shadow-shell: 14px 16px 0 rgb(30 42 120 / 0.1);
+    --shadow-card: 8px 9px 0 rgb(30 42 120 / 0.1);
+    --shadow-card-invert: 8px 9px 0 rgb(30 42 120 / 0.16);
+    --shadow-tile: 4px 5px 0 rgb(30 42 120 / 0.09);
+
+    /* §4 Spacing scale — 4 / 8 / 12 / 16 / 22 / 26 / 34 */
+    --s-1: 4px;
+    --s-2: 8px;
+    --s-3: 12px;
+    --s-4: 16px;
+    --s-5: 22px;
+    --s-6: 26px;
+    --s-7: 34px;
+
+    /* §6 Touch targets */
+    --touch-elder: 56px;
+    --touch-caregiver: 44px;
+    --touch-desktop: 40px;
+
+    /* Motion — 150–200ms presses and tab changes, 240ms modal entry */
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --t-press: 150ms;
+    --t-tab: 200ms;
+    --t-modal: 240ms;
+
+    /* Semantic z-scale, so no component ever reaches for 9999 */
+    --z-sticky: 10;
+    --z-overlay: 20;
+    --z-modal: 30;
+  }
+
+  /* The elder view's floor: 19px body, 21px button labels, nothing under 16px.
+   * Scoped to a class rather than a media query because the elder view is
+   * phone-only at every width. */
+  .co-elder {
+    --elder-body: 19px;
+    --elder-button: 22px;
+    --elder-min: 16px;
+  }
+}

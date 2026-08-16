@@ -1,0 +1,298 @@
+/* Elder view. Phone only, at any width, no exceptions.
+ *
+ * Floors from §3/§6, and they are floors rather than targets: 19px body, 21px
+ * button labels, nothing under 16px, 56px minimum touch target with the tiles
+ * at 138px. The fit requirement is that all six tiles plus the header sit in
+ * 402 x 874 with no scrolling, so nothing in here may become scrollable.
+ */
+
+@layer screens {
+  .co-elder {
+    font-size: var(--elder-body);
+  }
+
+  /* --- E1 daily log ------------------------------------------------------ */
+  .co-log {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 74px 20px 40px;
+    background: var(--screen);
+    overflow: hidden;
+  }
+
+  .co-log__header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 4px 22px;
+  }
+
+  .co-log__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .co-log__title {
+    font-size: 34px;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: var(--track-display);
+    color: var(--text);
+  }
+
+  .co-log__intro {
+    font-size: var(--elder-body);
+    line-height: 1.45;
+    color: var(--text-body);
+    text-wrap: pretty;
+  }
+
+  .co-log__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .co-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 138px;
+    padding: 16px 10px 14px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-frame);
+    box-shadow: var(--shadow-tile);
+    color: var(--ink);
+    transition:
+      transform var(--t-press) var(--ease-out),
+      background-color var(--t-press) var(--ease-out);
+  }
+
+  .co-tile:active {
+    transform: scale(0.97);
+    background: var(--ink-tint);
+  }
+
+  @media (hover: hover) {
+    .co-tile:hover {
+      background: var(--ink-tint);
+    }
+  }
+
+  .co-tile__label {
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: var(--track-tight);
+    color: var(--text);
+  }
+
+  .co-log__footer {
+    margin-top: auto;
+    padding-top: 18px;
+    text-align: center;
+    font-size: var(--elder-min);
+    color: var(--ink-mute);
+  }
+
+  /* --- E2 confirmation ---------------------------------------------------
+   * Overlays the log on tap. No timer, no auto-dismiss — Ruth ends it. */
+  .co-thanks {
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-overlay);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 22px;
+    padding: 100px 28px 48px;
+    background: var(--section);
+  }
+
+  .co-thanks--static {
+    position: static;
+    flex: 1;
+  }
+
+  .co-thanks__mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 96px;
+    height: 96px;
+    border-radius: var(--r-pill);
+    background: var(--ink-tint);
+    color: var(--ink);
+  }
+
+  .co-thanks__title {
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: var(--track-display);
+    color: var(--text);
+  }
+
+  .co-thanks__body {
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--text-body);
+    text-wrap: pretty;
+  }
+
+  .co-thanks__undo {
+    margin-top: 6px;
+    min-height: var(--touch-elder);
+    font-size: 18px;
+    color: var(--ink-mute);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .co-thanks__done {
+    margin-top: auto;
+    width: 100%;
+    min-height: var(--touch-elder);
+    padding: 22px;
+    border-radius: var(--r-card);
+    background: var(--ink);
+    color: var(--on-ink);
+    font-size: var(--elder-button);
+    font-weight: 600;
+    transition: transform var(--t-press) var(--ease-out);
+  }
+
+  .co-thanks__done:active {
+    transform: scale(0.98);
+  }
+
+  /* --- E3 weekly check-in ------------------------------------------------ */
+  .co-checkin {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 74px 24px 44px;
+    background: var(--screen);
+    overflow: hidden;
+  }
+
+  .co-progress {
+    display: flex;
+    gap: 8px;
+    padding-bottom: 26px;
+  }
+
+  .co-progress__seg {
+    height: 6px;
+    flex: 1;
+    border-radius: var(--r-pill);
+    background: var(--rule);
+    transition: background-color var(--t-tab) var(--ease-out);
+  }
+
+  .co-progress__seg--on {
+    background: var(--ink);
+  }
+
+  .co-checkin__block {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .co-checkin__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .co-checkin__question {
+    font-size: 33px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: var(--track-display);
+    color: var(--text);
+    text-wrap: pretty;
+  }
+
+  .co-checkin__answers {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 30px;
+  }
+
+  .co-answer {
+    min-height: var(--touch-elder);
+    padding: 24px;
+    border-radius: var(--r-card);
+    border: 1px solid var(--rule);
+    background: var(--card);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+    transition:
+      transform var(--t-press) var(--ease-out),
+      background-color var(--t-press) var(--ease-out);
+  }
+
+  .co-answer:active {
+    transform: scale(0.99);
+    background: var(--ink-tint);
+  }
+
+  @media (hover: hover) {
+    .co-answer:hover {
+      background: var(--ink-tint);
+    }
+  }
+
+  /* Declining is a real answer, not a lesser one — it just isn't scoreable,
+   * so it is framed as provisional rather than muted into invisibility. */
+  .co-answer--declined {
+    padding: 22px;
+    border-style: dashed;
+    background: transparent;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--ink-mute);
+  }
+
+  .co-checkin__footer {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 20px;
+  }
+
+  .co-checkin__back {
+    min-height: var(--touch-elder);
+    padding-right: 12px;
+    font-size: var(--elder-body);
+    color: var(--ink-mute);
+  }
+
+  .co-checkin__note {
+    font-size: 17px;
+    color: var(--ink-mute);
+  }
+
+  .co-checkin__done {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+    padding-top: 40px;
+  }
+}

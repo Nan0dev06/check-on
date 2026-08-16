@@ -1,0 +1,208 @@
+import { useCallback, useEffect, useState } from 'react'
+import { api } from '../lib/api'
+import Today from './Today'
+import Medicines from './Medicines'
+import Trend from './Trend'
+import Alerts from './Alerts'
+import AddMedicine from './AddMedicine'
+import FlagDetail from './FlagDetail'
+import Dashboard from './desktop/Dashboard'
+
+const TABS = [
+  { id: 'today', label: 'Today' },
+  { id: 'medicines', label: 'Medicines' },
+  { id: 'trend', label: 'Trend' },
+  { id: 'alerts', label: 'Alerts' },
+]
+
+/* Caregiver navigation: four tabs, and no stack deeper than one level.
+ *
+ * Three separate buttons — "See timeline" on Today, "Open the flag" on Alerts,
+ * and "See the taps" on the dashboard — all push the same flag detail screen.
+ * There is one of it, not three variants.
+ *
+ * At 1100px and above the dashboard fully replaces the tabs: Medicines and
+ * Alerts get no desktop screen of their own, because the dashboard already
+ * contains both. The two destinations open as centred modals over it.
+ */
+export default function CaregiverApp() {
+  const [wide, setWide] = useState(
+    () => window.matchMedia('(min-width: 1100px)').matches,
+  )
+  const [tab, setTab] = useState('today')
+  const [stack, setStack] = useState(readStack())
+  const data = useCareData()
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1100px)')
+    const on = (e) => setWide(e.matches)
+    mq.addEventListener('change', on)
+    return () => mq.removeEventListener('change', on)
+  }, [])
+
+  useEffect(() => {
+    const onPop = () => setStack(readStack())
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
+
+  const openFlag = useCallback((flag) => {
+    push(`/flag/${flag.symptom}`)
+    setStack({ kind: 'flag', symptom: flag.symptom })
+  }, [])
+
+  const openAdd = useCallback(() => {
+    push('/medicines/add')
+    setStack({ kind: 'add' })
+  }, [])
+
+  const closeStack = useCallback(() => {
+    push('/')
+    setStack(null)
+  }, [])
+
+  if (data.error) return <LoadFailed message={data.error} />
+  if (!data.ready) return <main className="co-phone" aria-busy="true" />
+
+  const overlay =
+    stack?.kind === 'flag' ? (
+      <FlagDetail
+        symptom={stack.symptom}
+        data={data}
+        onBack={closeStack}
+        asModal={wide}
+      />
+    ) : stack?.kind === 'add' ? (
+      <AddMedicine data={data} onClose={closeStack} asModal={wide} />
+    ) : null
+
+  if (wide) {
+    return (
+      <>
+        <Dashboard data={data} onOpenFlag={openFlag} onAddMedicine={openAdd} />
+        {overlay}
+      </>
+    )
+  }
+
+  if (overlay) return overlay
+
+  return (
+    <main className="co-phone">
+      {tab === 'today' && (
+        <Today data={data} onOpenFlag={openFlag} />
+      )}
+      {tab === 'medicines' && (
+        <Medicines data={data} onAdd={openAdd} />
+      )}
+      {tab === 'trend' && <Trend data={data} />}
+      {tab === 'alerts' && <Alerts data={data} onOpenFlag={openFlag} />}
+
+      <nav className="co-tabs" role="tablist" aria-label="Sections">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.id}
+            className={`co-tabs__tab${tab === t.id ? ' co-tabs__tab--on' : ''}`}
+            onClick={() => setTab(t.id)}
+          >
+            {t.label}
+          </button>
+        ))}
+      </nav>
+    </main>
+  )
+}
+
+/* --- data ---------------------------------------------------------------- */
+
+function useCareData() {
+  const [state, setState] = useState({ ready: false, error: null })
+
+  const load = useCallback(async () => {
+    try {
+      const [person, flags, medications, trend, notifications, doctorList] =
+        await Promise.all([
+          api.person(),
+          api.flags(),
+          api.medications(),
+          api.trend(),
+          api.notifications(),
+          api.doctorList(),
+        ])
+      setState({
+        ready: true,
+        error: null,
+        person,
+        flags,
+        medications,
+        trend,
+        notifications,
+        doctorList,
+      })
+    } catch (e) {
+      setState({ ready: false, error: e.message })
+    }
+  }, [])
+
+  useEffect(() => {
+    load()
+  }, [load])
+
+  const recheck = useCallback(async (flag) => {
+    // Re-runs that one check live. It may fail again, and if it does the card
+    // is left exactly as it was — never optimistically rendered as settled.
+    try {
+      await api.recheck(flag.symptom)
+    } catch {
+      /* keep the failed state */
+    }
+    await load()
+  }, [load])
+
+  // The count in the masthead is the server's, not a local tally. A tally that
+  // only ever increments would keep counting on a failed write and survive a
+  // reload it should not have.
+  const addToDoctorList = useCallback(async (flag) => {
+    try {
+      const res = await api.addToDoctorList(flag.tile_label)
+      setState((s) => ({ ...s, doctorList: res }))
+      return true
+    } catch {
+      return false
+    }
+  }, [])
+
+  return { ...state, reload: load, recheck, addToDoctorList }
+}
+
+function LoadFailed({ message }) {
+  return (
+    <main className="co-phone">
+      <div className="co-cg__header">
+        <h1 className="co-cg__title">The checks didn’t load.</h1>
+        <p className="co-cg__sub">
+          Nothing has been checked yet — this is not a result.
+        </p>
+      </div>
+      <div className="co-cg__scroll">
+        <p className="co-help">{message}</p>
+      </div>
+    </main>
+  )
+}
+
+/* --- routing helpers ----------------------------------------------------- */
+
+function readStack() {
+  const p = window.location.pathname
+  if (p.startsWith('/flag/')) return { kind: 'flag', symptom: p.slice(6) }
+  if (p === '/medicines/add') return { kind: 'add' }
+  return null
+}
+
+function push(to) {
+  window.history.pushState({}, '', to)
+}
