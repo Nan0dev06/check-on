@@ -1,0 +1,47 @@
+/* Demo/judging entry picker. Not a designed screen — reuses tokens and
+ * primitives only, no new visual language. */
+
+@layer screens {
+  .co-launcher {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    padding: var(--s-6);
+    background: var(--paper);
+  }
+
+  .co-launcher__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-5);
+    width: 100%;
+    max-width: 360px;
+    padding: var(--s-6);
+    background: var(--card);
+    border: 2px solid var(--ink);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  .co-launcher__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: var(--track-mono);
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+
+  .co-launcher__title {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: var(--track-display);
+    color: var(--text);
+  }
+
+  .co-launcher__options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+  }
+}

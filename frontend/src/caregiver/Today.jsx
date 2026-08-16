@@ -1,5 +1,5 @@
 import { FeedItem, LeadFlag } from './FlagStates'
-import { daysBetween, whenPhrase, whatsappLink } from '../lib/format'
+import { daysBetween, whenPhrase } from '../lib/format'
 
 /* C1 — Today.
  *
@@ -49,14 +49,6 @@ export default function Today({ data, onOpenFlag }) {
             {person.last_checkin_time}
           </span>
         </span>
-        <a
-          className="co-today__call"
-          href={whatsappLink(person.phone)}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Call
-        </a>
       </header>
 
       <div className="co-scroll co-stack co-cg__scroll" style={{ paddingTop: 8 }}>

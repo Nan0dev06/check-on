@@ -97,17 +97,3 @@ export function capitalise(s) {
   return s ? s[0].toUpperCase() + s.slice(1) : s
 }
 
-/** WhatsApp deep link for a phone number.
- *
- * `tel:` is the correct protocol on a handset, but on a desktop browser it
- * hands off to the OS and raises a "choose an application" dialog over the top
- * of the app — which is exactly what a caregiver sees on the dashboard, and
- * what anyone recording a demo hits. wa.me opens the chat directly in the app
- * or the web client, on both desktop and phone.
- *
- * wa.me wants digits only: no +, spaces or punctuation.
- */
-export function whatsappLink(phone) {
-  const digits = String(phone || '').replace(/\D/g, '')
-  return digits ? `https://wa.me/${digits}` : null
-}

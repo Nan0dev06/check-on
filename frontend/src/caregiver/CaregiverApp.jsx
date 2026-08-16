@@ -26,19 +26,25 @@ const TABS = [
  * contains both. The two destinations open as centred modals over it.
  */
 export default function CaregiverApp() {
-  const [wide, setWide] = useState(
-    () => window.matchMedia('(min-width: 1100px)').matches,
+  // ?view=mobile|desktop forces a layout regardless of the actual window
+  // width — the demo picker's two caregiver options. Anyone who lands here
+  // without it gets the real width-based switch from DESIGN_SYSTEM.md §5.
+  const forcedView = new URLSearchParams(window.location.search).get('view')
+  const [wide, setWide] = useState(() =>
+    forcedView ? forcedView === 'desktop'
+      : window.matchMedia('(min-width: 1100px)').matches,
   )
   const [tab, setTab] = useState('today')
   const [stack, setStack] = useState(readStack())
   const data = useCareData()
 
   useEffect(() => {
+    if (forcedView) return undefined
     const mq = window.matchMedia('(min-width: 1100px)')
     const on = (e) => setWide(e.matches)
     mq.addEventListener('change', on)
     return () => mq.removeEventListener('change', on)
-  }, [])
+  }, [forcedView])
 
   useEffect(() => {
     const onPop = () => setStack(readStack())

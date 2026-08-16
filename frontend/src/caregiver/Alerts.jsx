@@ -1,5 +1,4 @@
 import { alertBody, alertHeadline } from '../lib/copy'
-import { whatsappLink } from '../lib/format'
 
 /* C4 — Alerts.
  *
@@ -12,7 +11,7 @@ import { whatsappLink } from '../lib/format'
  * Today, where they demand nothing.
  */
 export default function Alerts({ data, onOpenFlag }) {
-  const { person, notifications, flags } = data
+  const { notifications, flags } = data
   const high = notifications.high
   const low = notifications.low
 
@@ -51,14 +50,6 @@ export default function Alerts({ data, onOpenFlag }) {
                     >
                       Open the flag
                     </button>
-                    <a
-                      className="co-btn co-btn--onink-secondary co-btn--grow"
-                      href={whatsappLink(person.phone)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Call {person.called}
-                    </a>
                   </div>
                 </article>
               )
