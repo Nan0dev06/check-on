@@ -11,8 +11,13 @@ secrets.*
 # Derived CSVs -- rebuild with scripts/build_frailty_dataset.py
 data/
 
-# Trained models -- rebuild with scripts/train_baseline.py
-models/
+# Trained models -- rebuild with scripts/train_baseline.py.
+# The two fitted baselines are committed: they are ~1 KB each and the app
+# cannot compute an expected frailty score without them, so a deploy that
+# rebuilt them would first have to download 33 MB of NHANES.
+models/*
+!models/frailty_baseline.joblib
+!models/frailty_baseline_app.joblib
 
 # --- python --------------------------------------------------------------
 __pycache__/
@@ -23,6 +28,23 @@ venv/
 env/
 .pytest_cache/
 .ipynb_checkpoints/
+
+# --- frontend ------------------------------------------------------------
+node_modules/
+
+# Screenshots from `npm run shots` -- regenerable, and large
+frontend/shots/
+
+# Working notes and handoff docs stay local
+CLAUDE.md
+DESIGN_SYSTEM.md
+frontend/*.md
+.claude/
+
+# Cached openFDA assessments. Content-addressed on the medications and
+# check-ins that produced each entry, so it is safe to delete; the next request
+# recomputes it against the live API.
+api/.assessment_cache.json
 
 # --- editors / os --------------------------------------------------------
 .vscode/

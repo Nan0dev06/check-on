@@ -1,0 +1,25 @@
+# Render blueprint — one web service serving both the API and the built app.
+#
+# The frontend is built locally and its output committed, because Render's
+# Python runtime has no Node to run `vite build`. That is a deadline tradeoff,
+# not a preference: the clean version is a Dockerfile with both toolchains, or
+# a second Static Site service. Rebuild and recommit with:
+#
+#     cd frontend && npm run build
+#
+# openFDA is queried live at runtime. OPENFDA_API_KEY is optional -- without it
+# the shared IP limit is 1,000 requests/day, which the demo stays well inside
+# because assessments are cached.
+services:
+  - type: web
+    name: check-on
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/person
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: OPENFDA_API_KEY
+        sync: false

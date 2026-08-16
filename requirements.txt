@@ -3,3 +3,7 @@ numpy>=2.0
 scikit-learn>=1.9
 joblib>=1.4
 openai>=2.0
+
+# API layer (api/) -- serves the frontend and the routes it calls
+fastapi>=0.115
+uvicorn[standard]>=0.30
